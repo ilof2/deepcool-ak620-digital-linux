@@ -43,8 +43,22 @@ def get_data(value=0, mode="util"):
     return base_data
 
 
+def get_cpu_temperature(label="CPU"):
+    sensors = psutil.sensors_temperatures()
+    for sensor_label, sensor_list in sensors.items():
+        for sensor in sensor_list:
+            if sensor.label == label:
+                return sensor.current
+    return 0
+
+
 def get_temperature():
-    temp = round(psutil.sensors_temperatures()[CHIPSET][0].current)
+    try:
+        temp = round(psutil.sensors_temperatures()[CHIPSET][0].current)
+    except KeyError:
+        print("Chipset does not exist in the system.")
+        temp = get_cpu_temperature()
+
     return get_data(value=temp, mode="temp")
 
 
@@ -55,9 +69,6 @@ def get_utils():
 
 try:
     h = hid.device()
-    if CHIPSET not in psutil.sensors_temperatures().keys():
-        raise IOError("Chipset does not exist in the system.")
-
     h.open(VENDOR_ID, PRODUCT_ID)
     h.set_nonblocking(1)
     h.write(get_data(mode="start"))
@@ -75,4 +86,5 @@ except IOError as error:
 except KeyboardInterrupt:
     print("Script terminated by user.")
 finally:
-    h.close()
+    if "h" in locals():
+        h.close()
