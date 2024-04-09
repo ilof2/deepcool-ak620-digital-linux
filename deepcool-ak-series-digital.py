@@ -5,7 +5,7 @@ import psutil
 
 VENDOR_ID = 0x3633  # DeepCool's Vendor ID
 PRODUCT_ID = 0  # to be updated in setup
-CHIPSET = ""  # to be updated in setup
+SENSOR = ""  # to be updated in setup
 INTERVAL = 2
 
 
@@ -49,14 +49,15 @@ def get_cpu_temperature(label="CPU"):
         for sensor in sensor_list:
             if sensor.label == label:
                 return sensor.current
+
     return 0
 
 
 def get_temperature():
     try:
-        temp = round(psutil.sensors_temperatures()[CHIPSET][0].current)
+        temp = round(psutil.sensors_temperatures()[SENSOR][0].current)
     except KeyError:
-        print("Chipset does not exist in the system.")
+        print("Sensor does not exist in the system.")
         temp = get_cpu_temperature()
 
     return get_data(value=temp, mode="temp")

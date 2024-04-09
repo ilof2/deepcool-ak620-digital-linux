@@ -9,15 +9,15 @@ PRODUCTS=(
 
 if [ "$#" -ne 2 ]
 then
-    echo "Please provide valid product and chipset names."
+    echo "Please provide valid product and hardware sensor names."
     exit 1
 fi
 
 PRODUCT=$1
-CHIPSET=$2
+SENSOR=$2
 
 sed -i "/PRODUCT_ID = 0/c\PRODUCT_ID = ${PRODUCTS[${PRODUCT}]}" deepcool-ak-series-digital.py
-sed -i "/CHIPSET = \"\"/c\CHIPSET = \"${CHIPSET}\"" deepcool-ak-series-digital.py
+sed -i "/SENSOR = \"\"/c\SENSOR = \"${SENSOR}\"" deepcool-ak-series-digital.py
 
 sudo cp -f deepcool-ak-series-digital.service /lib/systemd/system/
 sudo cp -f deepcool-ak-series-digital-restart.service /lib/systemd/system/
