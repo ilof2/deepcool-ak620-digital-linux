@@ -1,6 +1,6 @@
 # AK620 Digital Air Cooler Monitor on Linux
 
-This project enables monitoring of temperature and CPU utilization on DeepCool's AK620 digital air cooler for Linux systems. The solution has been tested on Ubuntu 23 with a Ryzen 7950X3D CPU. Customization may be required in the temperature section for other CPUs.
+This project enables monitoring of temperature and CPU utilization on DeepCool's AK series digital air cooler for Linux systems.  
 
 ## Dependencies
 
@@ -11,36 +11,46 @@ This script requires the following dependencies:
 
 You can install by running the provided `setup.sh` script:
 ```bash
-./setup.sh
+./setup.sh model sensor
 ```
+
+Available supported models:
+- `sk620`
+- `sk500s`
 
 ### Step-by-Step Guide
 
 1. **Install Python Dependencies**: First, you need to install the necessary Python libraries, `hidapi` and `psutil`. These libraries allow the script to interact with the hardware and monitor system resources.
 
-   Open a terminal and run the following commands:
-   ```bash
-   pip install hid
-   pip install psutil
-   ```
-    Note: If you encounter permission errors, try adding --user to install the packages for your user only or use sudo to install them system-wide (not recommended for pip).
+    Open a terminal and run the following commands:
+    ```bash
+    pip install hid
+    pip install psutil
+    ```
+    Note: If you encounter permission errors, try adding --user to install the packages for your user only or use sudo to install them system-wide (not recommended for `pip`).
 
-2. **Clone the Repository**:   The script and necessary configuration files are hosted on GitHub. Use git to clone the repository to your local machine.
+2. **Clone the Repository**: The script and necessary configuration files are hosted on GitHub. Use git to clone the repository to your local machine.
     ```bash
     git clone https://github.com/raghulkrishna/deepcool-ak620-digital-linux
-   ```
-3. **Navigate to the Project Directory**: Change your current directory to the newly cloned project folder.
+    ```
 
+3. **Navigate to the Project Directory**: Change your current directory to the newly cloned project folder.
     ```bash
     cd deepcool-ak620-digital-linux
     ```
-4. **Run the Setup Script**: : The setup.sh script will automate the configuration and setup process. Run the script by executing:
 
-    For coolers other than ak620 go to **deepcool-ak620-digital.py** and modify the **DEFAULT_VENDOR_ID** and **DEFAULT_PRODUCT_ID** accordingly. Check Trobuleshooting section on how to get vendor id and product id.
+4. **Look up the hardware temperature sensor**: Retrieve hardware temperature sensor label in the system. Run the following Python code snippet.
+    ```python
+    import psutil
+    print(psutil.sensors_temperatures().keys())
+    ```
 
+5. **Run the Setup Script**: The `setup.sh` script will automate the configuration and setup process. Run the script by executing:
+
+    Replace `model` with one of the available models matches your configuration and `sensor` with the label you retrieve from previous step.
     ```bash
-    bash ./setup.sh
-    ```    
+    ./setup.sh model sensor
+    ```
 
 ## Troubleshooting
 
