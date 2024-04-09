@@ -55,6 +55,9 @@ def get_utils():
 
 try:
     h = hid.device()
+    if CHIPSET not in psutil.sensors_temperatures().keys():
+        raise IOError("Chipset does not exist in the system.")
+
     h.open(VENDOR_ID, PRODUCT_ID)
     h.set_nonblocking(1)
     h.write(get_data(mode="start"))
