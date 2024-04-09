@@ -4,8 +4,8 @@ import hid
 import psutil
 
 VENDOR_ID = 0x3633  # DeepCool's Vendor ID
-PRODUCT_ID = 0x0004
-CHIPSET = "coretemp"
+PRODUCT_ID = 0  # to be updated in setup
+CHIPSET = ""  # to be updated in setup
 INTERVAL = 2
 
 
