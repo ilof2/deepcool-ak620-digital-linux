@@ -1,4 +1,4 @@
-# AK620 Digital Air Cooler Monitor on Linux
+# DeepCool AK Series Digital Air Cooler Monitor on Linux
 
 This project enables monitoring of temperature and CPU utilization on DeepCool's AK series digital air cooler for Linux systems.  
 
