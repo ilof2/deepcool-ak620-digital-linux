@@ -6,6 +6,8 @@ import psutil
 VENDOR_ID = 0x3633  # DeepCool's Vendor ID
 PRODUCT_ID = 0  # to be updated in setup
 SENSOR = ""  # to be updated in setup
+SHOW_TEMP = True
+SHOW_UTIL = True
 INTERVAL = 2
 
 
@@ -75,10 +77,13 @@ try:
     h.write(get_data(mode="start"))
     while True:
         h.set_nonblocking(1)
-        h.write(get_temperature())
-        time.sleep(INTERVAL)
-        h.write(get_utils())
-        time.sleep(INTERVAL)
+        if SHOW_TEMP:
+            h.write(get_temperature())
+            time.sleep(INTERVAL)
+
+        if SHOW_UTIL:
+            h.write(get_utils())
+            time.sleep(INTERVAL)
 except IOError as error:
     print(error)
     print(

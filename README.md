@@ -11,7 +11,9 @@ This script requires the following dependencies:
 
 You can install by running the provided `setup.sh` script:
 ```bash
-./setup.sh model sensor
+usage: ./setup.sh <model> <sensor> [-dt | --disable-temp] [-du | --disable-utils]
+        -dt, --disable-temp:    disable sensor temperature display
+        -du, --disable-utils:   disable CPU utilization display
 ```
 
 Available supported models:
@@ -49,7 +51,7 @@ Available supported models:
 
     Replace `model` with one of the available models matches your configuration and `sensor` with the label you retrieve from previous step.
     ```bash
-    ./setup.sh model sensor
+    ./setup.sh <model> <sensor>
     ```
 
 ## Troubleshooting
