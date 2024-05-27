@@ -1,31 +1,32 @@
-import sys
 import time
+
 import hid
 import psutil
 
-# Default values for Vendor ID and Product ID
-DEFAULT_VENDOR_ID = 0x3633  # DeepCool's Vendor ID
-DEFAULT_PRODUCT_ID = 0x0002  # AK620's Product ID
+VENDOR_ID = 0x3633  # DeepCool's Vendor ID
+PRODUCT_ID = 0  # to be updated in setup
+SENSOR = ""  # to be updated in setup
+SHOW_TEMP = True
+SHOW_UTIL = True
 INTERVAL = 2
 
-# Check for command-line arguments and assign them if provided
-VENDOR_ID = int(sys.argv[1], 0) if len(sys.argv) > 1 else DEFAULT_VENDOR_ID
-PRODUCT_ID = int(sys.argv[2], 0) if len(sys.argv) > 2 else DEFAULT_PRODUCT_ID
 
 def get_bar_value(input_value):
     return (input_value - 1) // 10 + 1
 
-def get_data(value=0, mode='util'):
-    base_data = [16, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+
+def get_data(value=0, mode="util"):
+    base_data = [16] + [0 for i in range(64 - 1)]
     numbers = [int(char) for char in str(value)]
     base_data[2] = get_bar_value(value)
-    if mode == 'util':
+    if mode == "util":
         base_data[1] = 76
-    elif mode == 'start':
+    elif mode == "start":
         base_data[1] = 170
         return base_data
-    elif mode == 'temp':
+    elif mode == "temp":
         base_data[1] = 19
+
     if len(numbers) == 1:
         base_data[5] = numbers[0]
     elif len(numbers) == 2:
@@ -40,7 +41,9 @@ def get_data(value=0, mode='util'):
         base_data[4] = numbers[1]
         base_data[5] = numbers[2]
         base_data[6] = numbers[3]
+
     return base_data
+
 
 def get_cpu_temperature(label="CPU"):
     sensors = psutil.sensors_temperatures()
@@ -48,38 +51,46 @@ def get_cpu_temperature(label="CPU"):
         for sensor in sensor_list:
             if sensor.label == label:
                 return sensor.current
+
     return 0
+
 
 def get_temperature():
     try:
-        temp = round(psutil.sensors_temperatures()['nct6687'][0].current)
+        temp = round(psutil.sensors_temperatures()[SENSOR][0].current)
     except KeyError:
+        print("Sensor does not exist in the system.")
         temp = get_cpu_temperature()
-    return get_data(value=temp, mode='temp')
+
+    return get_data(value=temp, mode="temp")
+
 
 def get_utils():
     utils = round(psutil.cpu_percent())
-    return get_data(value=utils, mode='util')
+    return get_data(value=utils, mode="util")
+
 
 try:
     h = hid.device()
-    h.open(VENDOR_ID, PRODUCT_ID)  # Use the dynamic values
+    h.open(VENDOR_ID, PRODUCT_ID)
     h.set_nonblocking(1)
     h.write(get_data(mode="start"))
     while True:
         h.set_nonblocking(1)
-        temp = get_temperature()
-        h.write(temp)
-        time.sleep(INTERVAL)
-        utils = get_utils()
-        h.write(utils)
-        time.sleep(INTERVAL)
-except IOError as ex:
-    print(ex)
-    print("Ensure that the AK620 is connected and the script has the correct Vendor ID and Product ID.")
-    print("Update the VENDOR_ID and PRODUCT_ID variables in this script or pass them as command-line arguments.")
+        if SHOW_TEMP:
+            h.write(get_temperature())
+            time.sleep(INTERVAL)
+
+        if SHOW_UTIL:
+            h.write(get_utils())
+            time.sleep(INTERVAL)
+except IOError as error:
+    print(error)
+    print(
+        "Ensure that the AK Series CPU cooler is connected and the script has the correct Vendor ID and Product ID."
+    )
 except KeyboardInterrupt:
     print("Script terminated by user.")
 finally:
-    if 'h' in locals():
+    if "h" in locals():
         h.close()
