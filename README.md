@@ -17,8 +17,8 @@ usage: ./setup.sh <model> <sensor> [-dt | --disable-temp] [-du | --disable-utils
 ```
 
 Available supported models:
-- `sk620`
-- `sk500s`
+- `ak620`
+- `ak500s`
 
 ### Step-by-Step Guide
 
