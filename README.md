@@ -59,6 +59,14 @@ Available supported models:
 1) If you encounter any errors related to HIDAPI or psutil, ensure that the dependencies are installed correctly by running the setup.sh script.
 2) Make sure the AK620 digital air cooler is properly connected to your system and that the correct Vendor ID and Product ID are set in the script.
 3) How to verify Product ID and Vendor ID ?  use lsusb -v to get the list of devices ans search for your cooler.
+4) `hid.HIDException`: unable to open device.
+You need to configure udev:
+```bash
+sudo mkdir -p /etc/udev/rules.d/
+echo 'KERNEL=="hidraw*", SUBSYSTEM=="hidraw", MODE="0666", TAG+="uaccess", TAG+="udev-acl"' | sudo tee /etc/udev/rules.d/92-viia.rules
+sudo udevadm control --reload-rules
+sudo udevadm trigger
+```
 
 Credits
 https://github.com/Algorithm0/deepcool-digital-info
