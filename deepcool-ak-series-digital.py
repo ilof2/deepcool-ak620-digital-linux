@@ -18,12 +18,12 @@ def get_bar_value(input_value):
 def get_data(value=0, mode="util"):
     base_data = [16] + [0 for i in range(64 - 1)]
     numbers = [int(char) for char in str(value)]
-    base_data[2] = get_bar_value(value)
+    base_data[2] = get_bar_value(int(value))
     if mode == "util":
         base_data[1] = 76
     elif mode == "start":
         base_data[1] = 170
-        return base_data
+        return bytes(base_data)
     elif mode == "temp":
         base_data[1] = 19
 
@@ -42,7 +42,7 @@ def get_data(value=0, mode="util"):
         base_data[5] = numbers[2]
         base_data[6] = numbers[3]
 
-    return base_data
+    return bytes(base_data)
 
 
 def get_cpu_temperature(label="CPU"):
@@ -71,19 +71,18 @@ def get_utils():
 
 
 try:
-    h = hid.device()
-    h.open(VENDOR_ID, PRODUCT_ID)
-    h.set_nonblocking(1)
+    h = hid.Device(VENDOR_ID, PRODUCT_ID)
     h.write(get_data(mode="start"))
     while True:
-        h.set_nonblocking(1)
         if SHOW_TEMP:
             h.write(get_temperature())
             time.sleep(INTERVAL)
+            h.nonblocking = 1
 
         if SHOW_UTIL:
             h.write(get_utils())
             time.sleep(INTERVAL)
+            h.nonblocking = 1
 except IOError as error:
     print(error)
     print(
